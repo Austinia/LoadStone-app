@@ -1,21 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
+import axios from 'axios';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, BackHandler, StyleSheet, Text, View } from 'react-native';
+import Loading from './Loading';
+import Searching from './Searching';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+export default class extends React.Component {
+  state={
+    isLoading: true
+  };
+  getresponce = async() => {
+    try {
+      const { data } = await axios.get(`https://xivapi.com/servers`);
+      this.setState({isLoading:false})
+    }
+     catch (error) {
+      Alert.alert("이런, 로드스톤 연결에 문제가 생겼어요..","제주시에게 연락해 주세요",[{text: "종료", onPress: () => BackHandler.exitApp()}])
+    }
+  };
+  componentDidMount(){
+    this.getresponce();
+  };
+  render(){
+    const {isLoading} = this.state;
+    return isLoading ? <Loading /> : <Searching />;
+  };
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
